@@ -16,6 +16,8 @@
     "dotenv": "^16.4.5",
     "express": "^4.21.0",
     "express-validator": "^7.2.0",
+    "mongodb": "^6.9.0",
+    "mongoose": "^8.7.0",
     "mysql2": "^3.11.3",
     "sequelize": "^6.37.3"
   },
@@ -25,3 +27,4 @@
     "supertest": "^7.0.0"
   }
 }
+

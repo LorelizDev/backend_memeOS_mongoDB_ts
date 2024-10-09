@@ -1,7 +1,7 @@
 import express from "express";
-import memeController from "../controllers/memeController.js";
 import { createMemeValidator, updateMemeValidator, idValidator } from "../validators/memeValidator.js";
 import validate from "../validators/handleValidator.js";
+import memeController from "../controllers/memeController.js";
 
 const router = express.Router();
 

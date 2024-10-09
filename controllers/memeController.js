@@ -1,4 +1,5 @@
 import memeModel from "../models/memeModel.js";
+import mongoose from "mongoose";
 
 const memeController = {
 	// Create a new meme
@@ -28,7 +29,7 @@ const memeController = {
 	// Get all memes
 	getAllMemes: async (req, res) => {
 		try {
-			const allMemes = await memeModel.findAll();
+			const allMemes = await memeModel.find();
 			console.log("✅ Memes retrieved successfully");
 			return res.status(200).json(
 				allMemes,
@@ -45,16 +46,26 @@ const memeController = {
 	getOneMeme: async (req, res) => {
 		try {
 			const { id } = req.params;
-			const oneMeme = await memeModel.findByPk(id);
+	
+			// Verifica si el ID es un ObjectId válido
+			if (!mongoose.Types.ObjectId.isValid(id)) {
+				return res.status(400).json({
+					message: "❌ Meme not found",
+				});
+			}
+	
+			const oneMeme = await memeModel.findById(id);
 			if (!oneMeme) {
 				return res.status(404).json({
 					message: "❌ Meme not found",
 				});
 			}
+			// Formatear la fecha antes de enviarla
+        if (oneMeme.date) {
+            oneMeme.date = new Date(oneMeme.date).toLocaleDateString('es-ES');
+        }
 			console.log("✅ Meme retrieved successfully");
-			return res.status(200).json(
-				oneMeme,
-			);
+			return res.status(200).json(oneMeme);
 		} catch (error) {
 			console.error("Error retrieving meme:", error);
 			return res.status(500).json({
@@ -63,37 +74,55 @@ const memeController = {
 			});
 		}
 	},
+	
 	// Update a meme by ID
 	updateMeme: async (req, res) => {
 		try {
 			const { id } = req.params;
 			const { name, date, author, stream, description } = req.body;
-			await memeModel.update(
-				{
-					name,
-					date,
-					author,
-					stream,
-					description,
-				},
-				{ where: { id } }
+	
+			// Verifica si el ID es un ObjectId válido
+			if (!mongoose.Types.ObjectId.isValid(id)) {
+				return res.status(400).json({
+					message: "❌ Invalid meme ID",
+				});
+			}
+	
+			const updatedMeme = await memeModel.findByIdAndUpdate(
+				id,
+				{ name, date, author, stream, description },
+				{ new: true }
 			);
+	
+			if (!updatedMeme) {
+				return res.status(404).json({
+					message: "❌ Meme not found",
+				});
+			}
+	
 			return res.status(200).json({
-				message: "✅ Meme updated successfully"
+				message: "✅ Meme updated successfully",
+				updatedMeme,
 			});
 		} catch (error) {
-			console.error(error);
+			console.error("Error updating meme:", error);
 			return res.status(500).json({
 				message: "❌ Failed to update meme",
 				error: error.message,
 			});
 		}
 	},
+	
 	// Delete a meme by ID
 	deleteMeme: async (req, res) => {
 		try {
 			const { id } = req.params;
-			await memeModel.destroy({ where: { id } });
+			const deletedMeme = await memeModel.findByIdAndDelete(id);
+			if (!deletedMeme) {
+				return res.status(404).json({
+					message: "Meme no encontrado",
+				});
+			}
 			return res.status(200).json({
 				message: "✅ Meme deleted successfully",
 			});

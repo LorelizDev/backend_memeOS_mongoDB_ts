@@ -1,38 +1,33 @@
-import db from "../database/db.js";
-import { DataTypes } from "sequelize";
+import mongoose from 'mongoose';
 
-const memeModel = db.define(
-  "Meme",
-  {
-    name: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    image: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    date: {
-      type: DataTypes.DATEONLY,
-      allowNull: false,
-    },
-    author: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    stream: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    description: {
-      type: DataTypes.TEXT,
-      allowNull: false,
-    },
+const memeSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
   },
-  {
-    timestamps: false,
-  }
-);
+  image: {
+    type: String,
+    required: true,
+  },
+  date: {
+    type: Date,
+    required: true,
+  },
+  author: {
+    type: String,
+    required: true,
+  },
+  stream: {
+    type: String,
+    required: true,
+  },
+  description: {
+    type: String,
+    required: true,
+  },
+}, { timestamps: true }); 
 
-console.log(memeModel === db.models.Meme); // true
-export default memeModel;
+
+const Meme = mongoose.model('Meme', memeSchema);
+
+export default Meme;
