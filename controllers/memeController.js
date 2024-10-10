@@ -45,12 +45,15 @@ const memeController = {
 	getOneMeme: async (req, res) => {
 		try {
 			const { id } = req.params;
-			const oneMeme = await memeModel.findByPk(id);
-			if (!oneMeme) {
+	
+			// Verifica si el ID es un ObjectId válido
+			if (!mongoose.Types.ObjectId.isValid(id)) {
 				return res.status(404).json({
 					message: "❌ Meme not found",
 				});
 			}
+	
+			const oneMeme = await memeModel.findById(id);
 			console.log("✅ Meme retrieved successfully");
 			return res.status(200).json(
 				oneMeme,
@@ -68,16 +71,20 @@ const memeController = {
 		try {
 			const { id } = req.params;
 			const { name, date, author, stream, description } = req.body;
-			await memeModel.update(
-				{
-					name,
-					date,
-					author,
-					stream,
-					description,
-				},
-				{ where: { id } }
+	
+			// Verifica si el ID es un ObjectId válido
+			if (!mongoose.Types.ObjectId.isValid(id)) {
+				return res.status(404).json({
+					message: "❌ Meme not found",
+				});
+			}
+	
+			const updatedMeme = await memeModel.findByIdAndUpdate(
+				id,
+				{ name, date, author, stream, description },
+				{ new: true }
 			);
+	
 			return res.status(200).json({
 				message: "✅ Meme updated successfully"
 			});
@@ -93,7 +100,13 @@ const memeController = {
 	deleteMeme: async (req, res) => {
 		try {
 			const { id } = req.params;
-			await memeModel.destroy({ where: { id } });
+			// Verifica si el ID es un ObjectId válido
+			if (!mongoose.Types.ObjectId.isValid(id)) {
+				return res.status(404).json({
+					message: "❌ Meme not found",
+				});
+			}
+			await memeModel.findByIdAndDelete(id);
 			return res.status(200).json({
 				message: "✅ Meme deleted successfully",
 			});
