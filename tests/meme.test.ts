@@ -1,7 +1,7 @@
 import request from 'supertest';
-import memeModel from '../models/memeModel.js';
-import connectToMongoDB from '../database/db.js';
-import { app, server } from '../app.js';
+import memeModel from '../models/memeModel';
+import connectToMongoDB from '../database/db';
+import { app, server } from '../app';
 import mongoose from 'mongoose';
 
 // ===================================
@@ -44,12 +44,14 @@ describe('Meme Controller CRUD Tests', () => {
             const response = await request(app).post('/api/memes').send(memeData);
 
             expect(response.status).toBe(201);
-            expect(response.body.name).toBe(memeData.name);
-            expect(response.body.image).toBe(memeData.image);
-            expect(response.body.date).toBe(memeData.date);
-            expect(response.body.author).toBe(memeData.author);
-            expect(response.body.stream).toBe(memeData.stream);
-            expect(response.body.description).toBe(memeData.description);
+            expect(response.body).toMatchObject({
+                name: memeData.name,
+                image: memeData.image,
+                date: memeData.date,
+                author: memeData.author,
+                stream: memeData.stream,
+                description: memeData.description,
+              });       
             expect(response.body).toHaveProperty('id');
         });
 
@@ -155,7 +157,7 @@ describe('Meme Controller CRUD Tests', () => {
             expect(response.body.message).toBe("✅ Meme updated successfully");
 
             const updatedMeme = await memeModel.findById(meme.id);
-            expect(updatedMeme.name).toBe(updateData.name);
+            expect(updatedMeme?.name).toBe(updateData.name);
         });
 
         it('should return 404 if meme not found', async () => {

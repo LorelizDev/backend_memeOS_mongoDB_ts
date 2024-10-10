@@ -1,6 +1,7 @@
-import mongoose from 'mongoose';
+import mongoose, { Schema, Model } from 'mongoose';
+import { IMeme } from '../interfaces/memeInterfaces';
 
-const memeSchema = new mongoose.Schema({
+const memeSchema: Schema<IMeme> = new mongoose.Schema({
   name: {
     type: String,
     required: true,
@@ -40,6 +41,6 @@ const memeSchema = new mongoose.Schema({
 });
 
 
-const Meme = mongoose.model('Meme', memeSchema);
+const memeModel: Model<IMeme> = mongoose.model<IMeme>('Meme', memeSchema);
 
-export default Meme;
+export default memeModel;
