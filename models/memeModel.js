@@ -25,7 +25,19 @@ const memeSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-}, { timestamps: true }); 
+}, 
+{ 
+  timestamps: false,
+  versionKey: false,
+  toJSON: {
+    transform: (doc, obj) => {
+      obj.id = obj._id;
+      obj.date = obj.date.toISOString().split('T')[0]; // Formatear la fecha
+      delete obj._id;
+      return obj;
+    }
+  }
+});
 
 
 const Meme = mongoose.model('Meme', memeSchema);
