@@ -1,23 +1,22 @@
 import request from 'supertest';
 import memeModel from '../models/memeModel.js';
-import db from '../database/db.js';
+import connectToMongoDB from '../database/db.js';
 import { app, server } from '../app.js';
 import mongoose from 'mongoose';
 
 beforeAll(async () => {
-    await db.sync();
+    // Conectar a la base de datos de MongoDB
+    await connectToMongoDB();
 });
 
 afterEach(async () => {
-    // Limpiamos los memes después de cada prueba
-    await memeModel.destroy({ where: {} });
+    // Limpiamos la colección de memes después de cada prueba
+    await memeModel.deleteMany({});
 });
 
 afterAll(async() => {
-    // Limpiamos la base de datos después de todas las pruebas
-    await db.sync({ force: true });
     // Cerramos la conexión a la base de datos después de las pruebas
-    await db.close();
+    await connectToMongoDB.close();
     // Cerramos el servidor después de las pruebas
     server.close();
 });

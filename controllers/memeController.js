@@ -1,4 +1,5 @@
 import memeModel from "../models/memeModel.js";
+import mongoose from "mongoose";
 
 const memeController = {
 	// Create a new meme
@@ -28,7 +29,7 @@ const memeController = {
 	// Get all memes
 	getAllMemes: async (req, res) => {
 		try {
-			const allMemes = await memeModel.findAll();
+			const allMemes = await memeModel.find();
 			console.log("✅ Memes retrieved successfully");
 			return res.status(200).json(
 				allMemes,
@@ -86,7 +87,8 @@ const memeController = {
 			);
 	
 			return res.status(200).json({
-				message: "✅ Meme updated successfully"
+				message: "✅ Meme updated successfully",
+				updatedMeme,
 			});
 		} catch (error) {
 			console.error(error);
