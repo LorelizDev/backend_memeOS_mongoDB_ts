@@ -14,9 +14,9 @@ const dbURL: string = `mongodb+srv://${DB_USER}:${DB_PASSWORD}@${DB_HOST}/${dbNa
 const connectToMongoDB = async (): Promise<void> => {
   try {
     await mongoose.connect(dbURL);
-    console.log(`Conectado a MongoDB en la base de datos: ${dbName}`);
+    console.log(`Conected to database MongoDB: ${dbName}`);
   } catch (error) {
-    console.log('Error al conectar a MongoDB:', error);
+    console.log('Error to connect to MongoDB:', error);
     // Salir del proceso si no se puede conectar
     process.exit(1);
   }
