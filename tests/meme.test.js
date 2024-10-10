@@ -4,6 +4,9 @@ import connectToMongoDB from '../database/db.js';
 import { app, server } from '../app.js';
 import mongoose from 'mongoose';
 
+// ===================================
+// Configuración de la base de datos
+// =================================
 beforeAll(async () => {
     // Conectar a la base de datos de MongoDB
     await connectToMongoDB();
@@ -14,20 +17,20 @@ afterEach(async () => {
     await memeModel.deleteMany({});
 });
 
-afterAll(async() => {
+afterAll(async () => {
     // Cerramos la conexión a la base de datos después de las pruebas
-    await connectToMongoDB.close();
+    await mongoose.connection.close();
     // Cerramos el servidor después de las pruebas
     server.close();
 });
 
-// ===================
+// ==========================
 // TODAS LAS PRUEBAS DEL CRUD
-// ===================
+// ==========================
 describe('Meme Controller CRUD Tests', () => {
 
     describe('CREATE meme', () => {
-        
+
         it('should create a meme', async () => {
             const memeData = {
                 name: 'Test Meme',
@@ -37,9 +40,9 @@ describe('Meme Controller CRUD Tests', () => {
                 stream: 'test_stream',
                 description: 'This is a test description',
             };
-    
+
             const response = await request(app).post('/api/memes').send(memeData);
-    
+
             expect(response.status).toBe(201);
             expect(response.body.name).toBe(memeData.name);
             expect(response.body.image).toBe(memeData.image);
@@ -50,7 +53,7 @@ describe('Meme Controller CRUD Tests', () => {
             expect(response.body).toHaveProperty('id');
         });
 
-        it('should handle errors on meme creation', async () => {
+        it(`should handle errors on meme creation`, async () => {
             const response = await request(app).post('/api/memes').send({
                 name: '',
                 image: 'invalid-url',
@@ -59,7 +62,6 @@ describe('Meme Controller CRUD Tests', () => {
                 stream: '',
                 description: '',
             });
-    
             expect(response.status).toBe(400);
             expect(response.body.errors).toBeDefined();
         });
@@ -77,8 +79,8 @@ describe('Meme Controller CRUD Tests', () => {
                     author: 'Author 1',
                     stream: 'stream1',
                     description: 'Description 1'
-                },
-                {
+                    },
+                    {
                     name: 'Meme 2',
                     image: 'http://example.com/image2.jpg',
                     date: '2024-01-02',
@@ -86,11 +88,11 @@ describe('Meme Controller CRUD Tests', () => {
                     stream: 'stream2',
                     description: 'Description 2'
                 }]);
-
-                const response = await request(app).get('/api/memes');
         
+                const response = await request(app).get('/api/memes');
+
                 expect(response.status).toBe(200);
-                expect(response.headers['content-type']).toContain('application/json')
+                expect(response.headers['content-type']).toContain('application/json');
                 expect(Array.isArray(response.body)).toBe(true);
 
                 // Recuperamos los memes de la base de datos
@@ -108,7 +110,7 @@ describe('Meme Controller CRUD Tests', () => {
                     image: 'http://example.com/image.jpg',
                     date: '2024-01-01',
                     author: 'Test Author',
-                    stream: 'stream',
+                    stream: 'test_stream',
                     description: 'Test description'
                 });
 
@@ -127,7 +129,7 @@ describe('Meme Controller CRUD Tests', () => {
         });
     });
 
-    describe('UPDATE meme ', () => {
+    describe('UPDATE meme', () => {
 
         it('should update a meme', async () => {
             const meme = await memeModel.create({
@@ -138,7 +140,7 @@ describe('Meme Controller CRUD Tests', () => {
                 stream: 'stream',
                 description: 'Old description'
             });
-    
+
             const updateData = {
                 name: 'Updated Meme',
                 date: '2024-01-02',
@@ -183,25 +185,26 @@ describe('Meme Controller CRUD Tests', () => {
 
             expect(response.status).toBe(400);
             expect(response.body.errors).toBeDefined();
+
         });
     });
 
     describe('DELETE meme', () => {
 
         it('should delete a meme', async () => {
-        const meme = await memeModel.create({
-            name: 'Test Meme to Delete',
-            image: 'http://example.com/image.jpg',
-            date: '2024-01-01',
-            author: 'Test Author',
-            stream: 'stream',
-            description: 'Description'
-        });
+            const meme = await memeModel.create({
+                name: 'Test Meme to Delete',
+                image: 'http://example.com/image.jpg',
+                date: '2024-01-01',
+                author: 'Test Author',
+                stream: 'stream',
+                description: 'Description'
+            });
 
             const response = await request(app).delete(`/api/memes/${meme.id}`);
 
-        expect(response.status).toBe(200);
-        expect(response.body.message).toBe("✅ Meme deleted successfully");
+            expect(response.status).toBe(200);
+            expect(response.body.message).toBe("✅ Meme deleted successfully");
 
             const deletedMeme = await memeModel.findById(meme.id);
             // Verificamos que el meme ya no existe

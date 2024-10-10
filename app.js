@@ -1,5 +1,5 @@
 import express from "express";
-import db from "./database/db.js";
+import connectToMongoDB from "./database/db.js";
 import memeModel from "./models/memeModel.js";
 import memeRoutes from "./routes/memeRoutes.js";
 import cors from 'cors';
@@ -15,13 +15,10 @@ app.use(express.json());
 app.use("/api/memes", memeRoutes);
 
 try {
-  await db.authenticate();
+  await connectToMongoDB();
   console.log("👍Connection has been established successfully.");
-
-  await memeModel.sync({ alter: true });
-  console.log("The table for the meme model was just (re)created!💕");
 } catch (error) {
-  console.error("❌Unable to connect to the database:", error);
+  console.error("❌Unable to connect to MongoDB", error);
 }
 
 export const server = app.listen(PORT, () => {

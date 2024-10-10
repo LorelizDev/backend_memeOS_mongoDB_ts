@@ -1,17 +1,24 @@
-import { Sequelize } from "sequelize";
-import { DB_HOST, DB_NAME, DB_PASSWORD, DB_USER, DB_TEST_NAME } from "../config.js";
+import mongoose from 'mongoose';
+import { DB_HOST, DB_DEV_NAME, DB_PASSWORD, DB_USER, DB_TEST_NAME,NODE_ENV } from "../config.js";
 
 // Determina si estamos en un entorno de prueba
-const isTest = process.env.NODE_ENV === 'test';
-const dbName = isTest ? DB_TEST_NAME : DB_NAME;
+const isTest = NODE_ENV === 'test';
+const dbName = isTest ? DB_TEST_NAME : DB_DEV_NAME;
 
-const db = new Sequelize(dbName, DB_USER, DB_PASSWORD, {
-  host: DB_HOST,
-  dialect: "mysql",
-  logging: false, // Desactiva los registros de SQL
-  define: {
-    timestamps: false,
-  },
-});
+// Crea la URL de conexión a MongoDB Atlas
+const dbURL = `mongodb+srv://${DB_USER}:${DB_PASSWORD}@${DB_HOST}/${dbName}?retryWrites=true&w=majority`;
+// Conexion a una base de datos local
+// const dbURL = `mongodb://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:27017/${dbName}`;
 
-export default db;
+const connectToMongoDB = async () => {
+  try {
+    await mongoose.connect(dbURL);
+    console.log(`Conectado a MongoDB en la base de datos: ${dbName}`);
+  } catch (error) {
+    console.log('Error al conectar a MongoDB:', error);
+    // Salir del proceso si no se puede conectar
+    process.exit(1);
+  }
+};
+
+export default connectToMongoDB;

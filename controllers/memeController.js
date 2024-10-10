@@ -56,9 +56,7 @@ const memeController = {
 	
 			const oneMeme = await memeModel.findById(id);
 			console.log("✅ Meme retrieved successfully");
-			return res.status(200).json(
-				oneMeme,
-			);
+			return res.status(200).json(oneMeme);
 		} catch (error) {
 			console.error("Error retrieving meme:", error);
 			return res.status(500).json({
@@ -67,6 +65,7 @@ const memeController = {
 			});
 		}
 	},
+	
 	// Update a meme by ID
 	updateMeme: async (req, res) => {
 		try {
@@ -91,13 +90,14 @@ const memeController = {
 				updatedMeme,
 			});
 		} catch (error) {
-			console.error(error);
+			console.error("Error updating meme:", error);
 			return res.status(500).json({
 				message: "❌ Failed to update meme",
 				error: error.message,
 			});
 		}
 	},
+	
 	// Delete a meme by ID
 	deleteMeme: async (req, res) => {
 		try {
